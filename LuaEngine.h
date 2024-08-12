@@ -15,6 +15,7 @@
 #include "DBCEnums.h"
 #include "Group.h"
 #include "Item.h"
+#include "LootMgr.h"
 #include "Map.h"
 #include "SharedDefines.h"
 #include "Weather.h"
