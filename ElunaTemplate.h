@@ -41,61 +41,18 @@ public:
     virtual void* GetObjIfValid() const = 0;
     // Returns pointer to the wrapped object's type name
     const char* GetTypeName() const { return type_name; }
-#if !defined TRACKABLE_PTR_NAMESPACE
     // Invalidates the pointer if it should be invalidated
     virtual void Invalidate() = 0;
-#endif
 
 protected:
     Eluna* E;
     const char* type_name;
 };
 
-#if defined TRACKABLE_PTR_NAMESPACE
-template <typename T>
-struct ElunaConstrainedObjectRef
-{
-    TRACKABLE_PTR_NAMESPACE unique_weak_ptr<T> Obj;
-    Map const* BoundMap = nullptr;
-};
-
-ElunaConstrainedObjectRef<Aura> GetWeakPtrFor(Aura const* obj);
-ElunaConstrainedObjectRef<Battleground> GetWeakPtrFor(Battleground const* obj);
-ElunaConstrainedObjectRef<Group> GetWeakPtrFor(Group const* obj);
-ElunaConstrainedObjectRef<Guild> GetWeakPtrFor(Guild const* obj);
-ElunaConstrainedObjectRef<Map> GetWeakPtrFor(Map const* obj);
-ElunaConstrainedObjectRef<Object> GetWeakPtrForObjectImpl(Object const* obj);
-ElunaConstrainedObjectRef<Quest> GetWeakPtrFor(Quest const* obj);
-ElunaConstrainedObjectRef<Spell> GetWeakPtrFor(Spell const* obj);
-ElunaConstrainedObjectRef<Vehicle> GetWeakPtrFor(Vehicle const* obj);
-
-template <typename T>
-ElunaConstrainedObjectRef<T> GetWeakPtrFor(T const* obj)
-{
-    ElunaConstrainedObjectRef<Object> ref = GetWeakPtrForObjectImpl(obj);
-    return { TRACKABLE_PTR_NAMESPACE static_pointer_cast<T>(ref.Obj), ref.BoundMap };
-}
-
-#endif
-
 template <typename T>
 class ElunaObjectImpl : public ElunaObject
 {
 public:
-#if defined TRACKABLE_PTR_NAMESPACE
-    ElunaObjectImpl(Eluna* E, T const* obj, char const* tname) : ElunaObject(E, tname), _obj(GetWeakPtrFor(obj))
-    {
-    }
-
-    void* GetObjIfValid() const override
-    {
-        if (TRACKABLE_PTR_NAMESPACE unique_strong_ref_ptr<T> obj = _obj.Obj.lock())
-            if (!E->GetBoundMap() || !_obj.BoundMap || E->GetBoundMap() == _obj.BoundMap)
-                return obj.get();
-
-        return nullptr;
-    }
-#else
     ElunaObjectImpl(Eluna* E, T* obj, char const* tname) : ElunaObject(E, tname), _obj(obj), callstackid(E->GetCallstackId())
     {
     }
@@ -109,15 +66,10 @@ public:
     }
 
     void Invalidate() override { callstackid = 1; }
-#endif
 
 private:
-#if defined TRACKABLE_PTR_NAMESPACE
-    ElunaConstrainedObjectRef<T> _obj;
-#else
     void* _obj;
     uint64 callstackid;
-#endif
 };
 
 template <typename T>
@@ -130,9 +82,7 @@ public:
 
     void* GetObjIfValid() const override { return const_cast<T*>(&_obj); }
 
-#if !defined TRACKABLE_PTR_NAMESPACE
     void Invalidate() override { }
-#endif
 
 private:
     T _obj;

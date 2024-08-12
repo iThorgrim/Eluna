@@ -309,13 +309,11 @@ void Eluna::RunScripts()
     OnLuaStateOpen();
 }
 
-#if !defined TRACKABLE_PTR_NAMESPACE
 void Eluna::InvalidateObjects()
 {
     ++callstackid;
     ASSERT(callstackid && "Callstackid overflow");
 }
-#endif
 
 void Eluna::Report(lua_State* _L)
 {
@@ -1005,10 +1003,8 @@ void Eluna::CleanUpStack(int number_of_arguments)
     lua_pop(L, number_of_arguments + 1); // Add 1 because the caller doesn't know about `event_id`.
     // Stack: (empty)
 
-#if !defined TRACKABLE_PTR_NAMESPACE
     if (event_level == 0)
         InvalidateObjects();
-#endif
 }
 
 /*
