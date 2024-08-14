@@ -11,7 +11,6 @@
 #include "ElunaUtility.h"
 #include "Hooks.h"
 
-#if !defined ELUNA_CMANGOS
 #include "DBCEnums.h"
 #include "Group.h"
 #include "Item.h"
@@ -20,19 +19,6 @@
 #include "SharedDefines.h"
 #include "Weather.h"
 #include "World.h"
-#if defined ELUNA_VMANGOS
-#include "Player.h"
-#endif
-#else
-#include "Entities/Item.h"
-#include "Globals/SharedDefines.h"
-#include "Groups/Group.h"
-#include "Maps/Map.h"
-#include "Server/DBCEnums.h"
-#include "Weather/Weather.h"
-#include "World/World.h"
-#include "Entities/Player.h"
-#endif
 
 #include <mutex>
 #include <memory>
@@ -63,7 +49,6 @@ class WorldPacket;
 struct AreaTriggerEntry;
 struct AuctionEntry;
 
-#if defined ELUNA_TRINITY
 class Battleground;
 class GameObjectAI;
 class InstanceScript;
@@ -73,33 +58,6 @@ struct ItemTemplate;
 typedef Battleground BattleGround;
 typedef BattlegroundTypeId BattleGroundTypeId;
 typedef InstanceScript InstanceData;
-#else
-class InstanceData;
-struct ItemPrototype;
-struct SpellEntry;
-typedef ItemPrototype ItemTemplate;
-typedef SpellEffectIndex SpellEffIndex;
-typedef SpellEntry SpellInfo;
-
-#if defined ELUNA_CMANGOS
-class TemporarySpawn;
-typedef TemporarySpawn TempSummon;
-#endif
-
-#if defined ELUNA_VMANGOS
-class TemporarySummon;
-typedef TemporarySummon TempSummon;
-#endif
-
-#if ELUNA_EXPANSION == CLASSIC
-typedef int Difficulty;
-#endif
-
-#if ELUNA_EXPANSION >= WOTLK
-class VehicleInfo;
-typedef VehicleInfo Vehicle;
-#endif
-#endif
 
 struct lua_State;
 class EventMgr;
@@ -231,10 +189,8 @@ public:
     lua_State* L;
     EventMgr* eventMgr;
 
-#if defined ELUNA_TRINITY
     QueryCallbackProcessor queryProcessor;
     QueryCallbackProcessor& GetQueryProcessor() { return queryProcessor; }
-#endif
 
     BindingMap< EventKey<Hooks::ServerEvents> >*     ServerEventBindings;
     BindingMap< EventKey<Hooks::PlayerEvents> >*     PlayerEventBindings;
@@ -448,10 +404,8 @@ public:
     bool OnQuestAccept(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest);
     bool OnQuestReward(Player* pPlayer, GameObject* pGameObject, Quest const* pQuest, uint32 opt);
     void GetDialogStatus(const Player* pPlayer, const GameObject* pGameObject);
-#if ELUNA_EXPANSION >= WOTLK
     void OnDestroyed(GameObject* pGameObject, WorldObject* attacker);
     void OnDamaged(GameObject* pGameObject, WorldObject* attacker);
-#endif
     void OnLootStateChanged(GameObject* pGameObject, uint32 state);
     void OnGameObjectStateChanged(GameObject* pGameObject, uint32 state);
     void UpdateAI(GameObject* pGameObject, uint32 diff);
@@ -476,9 +430,6 @@ public:
     void OnFreeTalentPointsChanged(Player* pPlayer, uint32 newPoints);
     void OnTalentsReset(Player* pPlayer, bool noCost);
     void OnMoneyChanged(Player* pPlayer, int32& amount);
-#if ELUNA_EXPANSION >= CATA
-    void OnMoneyChanged(Player* pPlayer, int64& amount);
-#endif
     void OnGiveXP(Player* pPlayer, uint32& amount, Unit* pVictim);
     void OnReputationChange(Player* pPlayer, uint32 factionID, int32& standing, bool incremental);
     void OnDuelRequest(Player* pTarget, Player* pChallenger);
@@ -504,14 +455,12 @@ public:
     void HandleGossipSelectOption(Player* pPlayer, uint32 menuId, uint32 sender, uint32 action, const std::string& code);
     void OnAchievementComplete(Player* pPlayer, uint32 achievementId);
 
-#if ELUNA_EXPANSION >= WOTLK
     /* Vehicle */
     void OnInstall(Vehicle* vehicle);
     void OnUninstall(Vehicle* vehicle);
     void OnInstallAccessory(Vehicle* vehicle, Creature* accessory);
     void OnAddPassenger(Vehicle* vehicle, Unit* passenger, int8 seatId);
     void OnRemovePassenger(Vehicle* vehicle, Unit* passenger);
-#endif
 
     /* AreaTrigger */
     bool OnAreaTrigger(Player* pPlayer, AreaTriggerEntry const* pTrigger);
@@ -534,10 +483,6 @@ public:
     void OnDisband(Guild* guild);
     void OnMemberWitdrawMoney(Guild* guild, Player* player, uint32& amount, bool isRepair);
     void OnMemberDepositMoney(Guild* guild, Player* player, uint32& amount);
-#if ELUNA_EXPANSION >= CATA
-    void OnMemberWitdrawMoney(Guild* guild, Player* player, uint64& amount, bool isRepair);
-    void OnMemberDepositMoney(Guild* guild, Player* player, uint64& amount);
-#endif
     void OnItemMove(Guild* guild, Player* player, Item* pItem, bool isSrcBank, uint8 srcContainer, uint8 srcSlotId, bool isDestBank, uint8 destContainer, uint8 destSlotId);
     void OnEvent(Guild* guild, uint8 eventType, uint32 playerGuid1, uint32 playerGuid2, uint8 newRank);
     void OnBankEvent(Guild* guild, uint8 eventType, uint8 tabId, uint32 playerGuid, uint32 itemOrMoney, uint16 itemStackCount, uint8 destTabId);

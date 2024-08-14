@@ -72,7 +72,7 @@ bool Eluna::OnItemUse(Player* pPlayer, Item* pItem, SpellCastTargets const& targ
     START_HOOK_WITH_RETVAL(ITEM_EVENT_ON_USE, pItem->GetEntry(), true);
     HookPush(pPlayer);
     HookPush(pItem);
-#if defined ELUNA_TRINITY
+
     if (GameObject* target = targets.GetGOTarget())
         HookPush(target);
     else if (Item* target = targets.GetItemTarget())
@@ -85,18 +85,6 @@ bool Eluna::OnItemUse(Player* pPlayer, Item* pItem, SpellCastTargets const& targ
         HookPush(target);
     else
         HookPush();
-#else
-    if (GameObject* target = targets.getGOTarget())
-        HookPush(target);
-    else if (Item* target = targets.getItemTarget())
-        HookPush(target);
-    else if (Corpse* target = pPlayer->GetMap()->GetCorpse(targets.getCorpseTargetGuid()))
-        HookPush(target);
-    else if (Unit* target = targets.getUnitTarget())
-        HookPush(target);
-    else
-        HookPush();
-#endif
 
     return CallAllFunctionsBool(ItemEventBindings, key, true);
 }

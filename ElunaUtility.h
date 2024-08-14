@@ -14,44 +14,26 @@
 #define WOTLK 2
 #define CATA 3
 
-#if !defined ELUNA_CMANGOS
 #include "SharedDefines.h"
 #include "ObjectGuid.h"
 #include "Log.h"
-#if defined ELUNA_TRINITY
 #include "QueryResult.h"
-#else
-#include "Database/QueryResult.h"
-#endif
-#else
-#include "Globals/SharedDefines.h"
-#include "Entities/ObjectGuid.h"
-#include "Database/QueryResult.h"
-#include "Log/Log.h"
-#endif
 
 #include <unordered_map>
 #include <unordered_set>
 #include <mutex>
 #include <memory>
 
-#if !defined ELUNA_VMANGOS
 #define USING_BOOST
-#endif
 
 #if defined TRINITY_PLATFORM && defined TRINITY_PLATFORM_WINDOWS
 #if TRINITY_PLATFORM == TRINITY_PLATFORM_WINDOWS
-#define ELUNA_WINDOWS
-#endif
-#elif defined PLATFORM && defined PLATFORM_WINDOWS
-#if PLATFORM == PLATFORM_WINDOWS
 #define ELUNA_WINDOWS
 #endif
 #else
 #error Eluna could not determine platform
 #endif
 
-#if defined ELUNA_TRINITY
 typedef QueryResult ElunaQuery;
 #define GET_GUID                GetGUID
 #define HIGHGUID_PLAYER         HighGuid::Player
@@ -67,9 +49,7 @@ typedef QueryResult ElunaQuery;
 #define HIGHGUID_MO_TRANSPORT   HighGuid::Mo_Transport
 #define HIGHGUID_INSTANCE       HighGuid::Instance
 #define HIGHGUID_GROUP          HighGuid::Group
-#endif
 
-#if defined ELUNA_TRINITY
 #include "fmt/printf.h"
 #define ELUNA_LOG_TC_FMT(TC_LOG_MACRO, ...) \
     try { \
@@ -81,27 +61,6 @@ typedef QueryResult ElunaQuery;
 #define ELUNA_LOG_INFO(...)     ELUNA_LOG_TC_FMT(TC_LOG_INFO, __VA_ARGS__);
 #define ELUNA_LOG_ERROR(...)    ELUNA_LOG_TC_FMT(TC_LOG_ERROR, __VA_ARGS__);
 #define ELUNA_LOG_DEBUG(...)    ELUNA_LOG_TC_FMT(TC_LOG_DEBUG, __VA_ARGS__);
-#elif defined ELUNA_VMANGOS
-typedef std::shared_ptr<QueryNamedResult> ElunaQuery;
-#define ASSERT                  MANGOS_ASSERT
-#define ELUNA_LOG_INFO(...)     sLog.Out(LOG_ELUNA, LOG_LVL_BASIC,__VA_ARGS__);
-#define ELUNA_LOG_ERROR(...)    sLog.Out(LOG_ELUNA, LOG_LVL_ERROR,__VA_ARGS__);
-#define ELUNA_LOG_DEBUG(...)    sLog.Out(LOG_ELUNA, LOG_LVL_DEBUG,__VA_ARGS__);
-#define GET_GUID                GetObjectGuid
-#define GetGameObjectTemplate   GetGameObjectInfo
-#define GetItemTemplate         GetItemPrototype
-#define GetTemplate             GetProto
-#else
-typedef std::shared_ptr<QueryNamedResult> ElunaQuery;
-#define ASSERT                  MANGOS_ASSERT
-#define ELUNA_LOG_INFO(...)     sLog.outString(__VA_ARGS__);
-#define ELUNA_LOG_ERROR(...)    sLog.outErrorEluna(__VA_ARGS__);
-#define ELUNA_LOG_DEBUG(...)    sLog.outDebug(__VA_ARGS__);
-#define GET_GUID                GetObjectGuid
-#define GetGameObjectTemplate   GetGameObjectInfo
-#define GetItemTemplate         GetItemPrototype
-#define GetTemplate             GetProto
-#endif
 
 #if !defined MAKE_NEW_GUID
 #define MAKE_NEW_GUID(l, e, h)  ObjectGuid(h, e, l)

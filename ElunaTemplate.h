@@ -16,15 +16,8 @@ extern "C"
 #include "LuaEngine.h"
 #include "ElunaUtility.h"
 #include "ElunaCompat.h"
-#if !defined ELUNA_CMANGOS
 #include "SharedDefines.h"
-#else
-#include "Globals/SharedDefines.h"
-#endif
-
-#if defined ELUNA_TRINITY
 #include "UniqueTrackablePtr.h"
-#endif
 
 class ElunaObject
 {
